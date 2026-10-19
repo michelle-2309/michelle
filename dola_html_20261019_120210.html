@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>印尼有点东西 · 内容工作台</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif}
+body{background:#eef2f5;min-height:100vh;padding:2rem 1.5rem;display:flex;flex-direction:column;align-items:center}
+.app{max-width:1500px;width:100%}
+.brand{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.6rem;flex-wrap:wrap}
+.brand h1{font-size:2rem;font-weight:700;color:#0e2a39;letter-spacing:-.02em;display:flex;align-items:center;gap:.5rem}
+.brand h1 span{background:#1f4e6f;color:#fff;font-size:.9rem;font-weight:500;padding:.2rem .9rem;border-radius:60px}
+.brand .badge{background:#d8e3eb;color:#12384f;font-size:.85rem;font-weight:500;padding:.3rem 1rem;border-radius:100px}
+.module-tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.module-tab{background:#fff;border:1px solid #c7dce9;padding:.6rem 1.2rem;border-radius:40px;font-size:.85rem;font-weight:600;color:#1b4e6c;cursor:pointer;transition:all .15s}
+.module-tab:hover{background:#e4eff7}
+.module-tab.active{background:#1f4e6f;color:#fff;border-color:#1f4e6f}
+.module-panel{display:none}
+.module-panel.active{display:block}
+.card{background:#fff;border-radius:24px;padding:1.5rem 1.5rem 1.7rem;box-shadow:0 8px 22px -8px rgba(0,30,45,.10),0 2px 6px rgba(0,0,0,.02);border:1px solid rgba(210,225,235,.6);display:flex;flex-direction:column;gap:1rem;height:fit-content;margin-bottom:1.4rem}
+.card-header{display:flex;align-items:center;gap:.7rem;border-bottom:1px solid #dee9f0;padding-bottom:.85rem;flex-wrap:wrap}
+.card-header h2{font-size:1.2rem;font-weight:600;color:#132f40;display:flex;align-items:center;gap:.4rem}
+.card-header .icon{font-size:1.4rem}
+.card-header .badge{margin-left:auto;background:#d9e6f0;padding:.2rem .75rem;border-radius:100px;font-size:.7rem;font-weight:600;color:#1b4b67}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+@media(max-width:800px){.grid-2{grid-template-columns:1fr}}
+.platform-card{background:#f7fafc;border-radius:18px;padding:1rem;border:1px solid #deecf5}
+.platform-title{font-size:.85rem;font-weight:700;color:#1e4a66;margin-bottom:.6rem}
+.platform-row{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;color:#3a5f77;padding:.25rem 0;border-bottom:1px dashed #e2edf5}
+.platform-row:last-child{border-bottom:none}
+.platform-row input{width:80px;text-align:right;border:1px solid #c7ddec;border-radius:8px;padding:.25rem .4rem;font-size:.75rem;outline:none;color:#153e54}
+.data-table{width:100%;border-collapse:collapse;font-size:.8rem}
+.data-table th{text-align:left;padding:.5rem .4rem;color:#2b5673;font-weight:700;border-bottom:2px solid #bfd7e8;font-size:.7rem;text-transform:uppercase;letter-spacing:.3px}
+.data-table td{padding:.4rem .4rem;border-bottom:1px solid #e8f0f6;color:#1a3a4e}
+.data-table input,.data-table select{border:1px solid #c7ddec;border-radius:8px;padding:.28rem .35rem;font-size:.75rem;background:#fff;width:100%;outline:none;color:#153e54}
+.data-table input:focus,.data-table select:focus{border-color:#3c86b0}
+.btn-sm{background:#e4eff7;border:1px solid #c7dce9;padding:.45rem .9rem;border-radius:40px;font-size:.8rem;font-weight:500;color:#1b4e6c;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;transition:all .1s}
+.btn-sm:hover{background:#d2e4f2;border-color:#a4c4da}
+.btn-sm:active{transform:scale(.96)}
+.btn-danger{background:#fce8e6;border-color:#f5c6c0;color:#a13a2e}
+.btn-danger:hover{background:#f8d7d2}
+.btn-primary{background:#1f4e6f;color:#fff;border-color:#1f4e6f}
+.btn-primary:hover{background:#184059}
+.btn-link{background:transparent;border:none;color:#1f6e96;padding:.3rem .5rem;font-size:.75rem;text-decoration:underline;cursor:pointer}
+.btn-link:hover{color:#1f4e6f}
+.hint{font-size:.7rem;color:#658499;line-height:1.5}
+.best{color:#2e8b57;font-weight:700}
+.divider{height:1px;background:#dee9f0;margin:.8rem 0}
+.text-lgarea{width:100%;padding:.9rem;border-radius:14px;border:1px solid #d0e2ee;background:#fafdff;font-size:.8rem;line-height:1.6;min-height:140px;outline:none;resize:vertical}
+.text-lgarea:focus{border-color:#4387b0;box-shadow:0 0 0 3px rgba(67,135,176,.1)}
+.text-smarea{width:100%;padding:.75rem;border-radius:12px;border:1px solid #d9e8f2;background:#fefefe;font-size:.8rem;line-height:1.6;min-height:100px;outline:none;resize:vertical}
+.text-smarea:focus{border-color:#5fa8c7}
+.conclusion-box{background:#f0f7fd;border-radius:16px;padding:1rem 1.2rem;border:1px solid #d3e5f2;font-size:.85rem;color:#1a3a4e;line-height:1.8;white-space:pre-wrap}
+.empty-hint{text-align:center;padding:1.5rem;color:#8aa3b5;font-size:.85rem}
+.form-row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-top:.5rem}
+.tag-row{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}
+.tag{background:#d4e6f2;color:#14435e;font-size:.7rem;font-weight:600;padding:.3rem .7rem;border-radius:100px;border:1px solid #b8d3e4}
+.tag.pending{background:#fff3cd;color:#856404;border-color:#ffecb5}
+.tag.scripted{background:#d4edda;color:#155724;border-color:#c3e6cb}
+.tag.done{background:#d1e7dd;color:#0f5132;border-color:#badbcc}
+.calendar-controls{display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem}
+.calendar-controls button{background:#e4eff7;border:1px solid #c7dce9;width:2rem;height:2rem;border-radius:50%;font-size:1rem;cursor:pointer;color:#1b4e6c;display:flex;align-items:center;justify-content:center}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.3rem;text-align:center;font-size:.78rem}
+.calendar-grid .day-label{font-weight:700;color:#48738b;font-size:.7rem;padding:.3rem 0}
+.calendar-grid .day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px;border:1px solid #e2edf5;background:#fafdff;cursor:pointer;transition:all .1s;color:#1a3a4e;font-weight:500;position:relative;font-size:.75rem}
+.calendar-grid .day:hover{background:#e4eff7;border-color:#a4c4da}
+.calendar-grid .day.other-month{color:#b0c4d2;background:#f5f8fa}
+.calendar-grid .day.today{background:#1f4e6f;color:#fff;border-color:#1f4e6f;font-weight:700}
+.calendar-grid .day.has-upload{background:#d4e6f2;border-color:#7faec9}
+.calendar-grid .day.has-upload::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:#1f6e96}
+.calendar-grid .day.today.has-upload::after{background:#fff}
+.upload-list,.compact-list{display:flex;flex-direction:column;gap:.5rem;max-height:320px;overflow-y:auto;padding-right:.2rem}
+.insp-item{display:flex;flex-direction:column;gap:.5rem;background:#f8fbfe;padding:.9rem;border-radius:14px;border:1px solid #e3eef6;transition:all .15s}
+.insp-item:hover{border-color:#bdd7e7}
+.insp-head{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.insp-title{font-weight:600;color:#17394c;flex:1}
+.insp-actions{display:flex;gap:.3rem;align-items:center}
+.insp-detail{padding:.7rem .9rem;background:#fafcfe;border-radius:10px;border:1px solid #eaf1f7;margin-top:.3rem}
+.shoot-item{border-left:3px solid #1f4e6f;padding:1rem 1.2rem;margin-bottom:1rem;background:#fafcfe;border-radius:0 14px 14px 0}
+.shoot-head{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem}
+.shoot-title{font-weight:600;color:#17394c;flex:1;font-size:.95rem}
+.shoot-meta{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.todo-list{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+.todo-list li{display:flex;align-items:center;gap:.65rem;background:#f1f8fe;padding:.6rem .85rem;border-radius:40px;border:1px solid #d9e8f2}
+.todo-list input[type="checkbox"]{width:1.1rem;height:1.1rem;accent-color:#1f6e96;flex-shrink:0;cursor:pointer}
+.todo-list label{font-weight:500;color:#1b3b4f;font-size:.85rem;flex:1;cursor:pointer}
+.del{color:#a13a2e;cursor:pointer;font-weight:bold}
+.move-btn{color:#2e7d32;cursor:pointer;font-weight:bold;white-space:nowrap}
+.edit-btn{color:#1f6e96;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand">
+    <h1>🇮🇩 印尼有点东西 <span>内容工作台</span></h1>
+    <span class="badge">灵感联动版</span>
+  </div>
+
+  <!-- 模块导航 - 已修复点击 -->
+  <div class="module-tabs">
+    <button class="module-tab active" data-panel="data">📊 数据分析</button>
+    <button class="module-tab" data-panel="account">👤 账号情况</button>
+    <button class="module-tab" data-panel="inspiration">💡 灵感草稿</button>
+    <button class="module-tab" data-panel="shoot">🎬 拍摄计划</button>
+    <button class="module-tab" data-panel="other">📌 其他工作待办</button>
+  </div>
+
+  <!-- 数据分析 -->
+  <div class="module-panel active" id="panel-data">
+    <div class="card">
+      <div class="card-header"><span class="icon">📥</span><h2>批量导入作品明细</h2></div>
+      <div class="hint"><strong>列顺序：</strong>标题 | 栏目 | 平台 | 播放 | 完播% | 互动% | 投流花费 | 投流带来播放</div>
+      <textarea id="pasteArea" class="text-lgarea" placeholder="直接从Excel复制粘贴…"></textarea>
+      <div class="form-row">
+        <button class="btn-sm btn-primary" id="importBtn">📥 解析并导入</button>
+        <button class="btn-sm" id="downloadTemplateBtn">📄 下载模板</button>
+        <span class="hint" id="parseHint"></span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="icon">📝</span><h2>作品明细</h2><span class="badge" id="countBadge">共0条</span></div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>标题</th><th>栏目</th><th>平台</th><th>播放</th><th>完播%</th><th>互动%</th><th>投流¥</th><th>引流播放</th><th>ROI</th><th>删</th></tr></thead>
+          <tbody id="workTbody"></tbody>
+        </table>
+      </div>
+      <div id="workEmptyHint" class="empty-hint">暂无数据</div>
+      <div class="form-row">
+        <button class="btn-sm" id="addSingleBtn">➕ 手动添加</button>
+        <button class="btn-sm btn-danger" id="clearAllBtn">🗑️ 清空</button>
+        <button class="btn-sm" id="exportBtn">📤 导出</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="icon">📈</span><h2>分析报告</h2></div>
+      <div class="conclusion-box" id="reportBox">暂无数据</div>
+      <div class="form-row"><button class="btn-sm btn-primary" id="genReportBtn">📊 生成报告</button></div>
+    </div>
+  </div>
+
+  <!-- 账号情况 -->
+  <div class="module-panel" id="panel-account">
+    <div class="card">
+      <div class="card-header"><span class="icon">👤</span><h2>账号简介</h2></div>
+      <div style="font-size:.9rem;line-height:1.7;">
+        <p><strong>人设：</strong>有好奇心的生活观察者，发现真实有趣的印尼日常</p>
+        <p style="margin:.5rem 0;"><strong>四大栏目：</strong></p>
+        <div class="tag-row">
+          <span class="tag">① 印尼语有点东西</span>
+          <span class="tag">② 跟着朋友发现印尼</span>
+          <span class="tag">③ 问问印尼朋友</span>
+          <span class="tag">④ 在印尼把生活过得舒服点</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="icon">📊</span><h2>平台数据</h2></div>
+      <div class="grid-2">
+        <div class="platform-card">
+          <div class="platform-title">📕 小红书</div>
+          <div class="platform-row"><span>粉丝</span><input id="xhs-fans"></div>
+          <div class="platform-row"><span>播放</span><input id="xhs-views"></div>
+        </div>
+        <div class="platform-card">
+          <div class="platform-title">💬 视频号</div>
+          <div class="platform-row"><span>粉丝</span><input id="sph-fans"></div>
+          <div class="platform-row"><span>播放</span><input id="sph-views"></div>
+        </div>
+        <div class="platform-card">
+          <div class="platform-title">🎵 抖音</div>
+          <div class="platform-row"><span>粉丝</span><input id="dy-fans"></div>
+          <div class="platform-row"><span>播放</span><input id="dy-views"></div>
+        </div>
+        <div class="platform-card">
+          <div class="platform-title">🎶 TikTok</div>
+          <div class="platform-row"><span>粉丝</span><input id="tt-fans"></div>
+          <div class="platform-row"><span>播放</span><input id="tt-views"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <button class="btn-sm" id="savePlatformBtn">💾 保存</button>
+        <span class="hint" id="platformHint"></span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="icon">📅</span><h2>上传日历</h2></div>
+      <div class="calendar-controls">
+        <button id="prevMonth">‹</button>
+        <span id="calendarTitle"></span>
+        <button id="nextMonth">›</button>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+      <div class="divider"></div>
+      <div style="font-weight:600;margin:.5rem 0">上传记录</div>
+      <div class="upload-list" id="uploadList"></div>
+      <div id="uploadEmptyHint" class="empty-hint">暂无记录</div>
+      <div class="form-row">
+        <input type="date" id="uploadDate">
+        <input id="uploadTitle" placeholder="标题" style="flex:1">
+        <select id="uploadColumnSel">
+          <option value="">栏目</option>
+          <option>① 印尼语有点东西</option>
+          <option>② 跟着朋友发现印尼</option>
+          <option>③ 问问印尼朋友</option>
+          <option>④ 在印尼把生活过得舒服点</option>
+        </select>
+        <button class="btn-sm" id="addUploadBtn">➕ 添加</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 灵感草稿 -->
+  <div class="module-panel" id="panel-inspiration">
+    <div class="card">
+      <div class="card-header"><span class="icon">💡</span><h2>灵感草稿 · 选题库</h2></div>
+      <div class="compact-list" id="inspirationList"></div>
+      <div id="inspEmptyHint" class="empty-hint">暂无选题</div>
+      <div class="divider" style="margin:1rem 0"></div>
+      <div style="background:#f7fafc;border-radius:14px;padding:1rem;">
+        <div style="font-weight:600;margin-bottom:.7rem;">➕ 新增选题</div>
+        <div class="form-row">
+          <input id="newInspTitle" placeholder="选题标题" style="flex:2">
+          <select id="newInspCol">
+            <option value="">栏目</option>
+            <option>① 印尼语有点东西</option>
+            <option>② 跟着朋友发现印尼</option>
+            <option>③ 问问印尼朋友</option>
+            <option>④ 在印尼把生活过得舒服点</option>
+          </select>
+        </div>
+        <div style="margin-top:.7rem;">
+          <label style="font-size:.75rem;font-weight:600;margin-bottom:.3rem;display:block;">📝 详细构思</label>
+          <textarea id="newInspDetail" class="text-smarea" placeholder="写你的想法、素材、问题、地点…"></textarea>
+        </div>
+        <div class="form-row" style="margin-top:.5rem;">
+          <button class="btn-sm btn-primary" id="addInspBtn">💡 保存灵感</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 拍摄计划 - 完整功能 -->
+  <div class="module-panel" id="panel-shoot">
+    <div class="card">
+      <div class="card-header"><span class="icon">🎬</span><h2>拍摄脚本计划</h2><span class="badge" id="shootCountBadge">0个待拍</span></div>
+      <div style="margin-bottom:1rem;padding:.8rem;background:#f0f7fd;border-radius:12px;">
+        💡 从灵感草稿点「→ 加入拍摄计划」自动带入内容，或直接在下方新增
+      </div>
+      <div id="shootList"></div>
+      <div id="shootEmptyHint" class="empty-hint">暂无计划</div>
+      <div class="divider" style="margin:1.5rem 0"></div>
+      <div style="background:#f7fafc;border-radius:14px;padding:1rem;">
+        <div style="font-weight:600;margin-bottom:.7rem;">➕ 新增拍摄脚本</div>
+        <div class="form-row">
+          <input id="newShootTitle" placeholder="脚本标题" style="flex:2">
+          <select id="newShootCol">
+            <option value="">栏目</option>
+            <option>① 印尼语有点东西</option>
+            <option>② 跟着朋友发现印尼</option>
+            <option>③ 问问印尼朋友</option>
+            <option>④ 在印尼把生活过得舒服点</option>
+          </select>
+        </div>
+        <div style="margin-top:.7rem;">
+          <label style="font-size:.75rem;font-weight:600;margin-bottom:.3rem;display:block;">📝 脚本内容</label>
+          <textarea id="newShootContent" class="text-smarea" placeholder="开场、画面、台词、备注…"></textarea>
+        </div>
+        <div class="form-row" style="margin-top:.5rem;">
+          <button class="btn-sm btn-primary" id="addShootBtn">🎬 保存计划</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 其他待办 -->
+  <div class="module-panel" id="panel-other">
+    <div class="card">
+      <div class="card-header"><span class="icon">📌</span><h2>工作待办</h2></div>
+      <ul class="todo-list" id="todoList"></ul>
+      <div id="todoEmptyHint" class="empty-hint">暂无待办</div>
+      <div class="form-row">
+        <input id="newTodo" placeholder="新待办…" style="flex:1">
+        <button class="btn-sm" id="addTodoBtn">➕ 添加</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $ = id => document.getElementById(id);
+const esc = s => { const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
+const num = v => parseFloat(v) || 0;
+const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const load = (k, def) => { try { const j = localStorage.getItem(k); return j ? JSON.parse(j) : def; } catch { return def; } };
+
+const COLS = ['① 印尼语有点东西','② 跟着朋友发现印尼','③ 问问印尼朋友','④ 在印尼把生活过得舒服点','其他'];
+const PLATS = ['小红书','视频号','抖音','TikTok'];
+
+// ========== 修复后的板块切换 ==========
+document.querySelectorAll('.module-tab').forEach(tab => {
+  tab.addEventListener('click', function(){
+    document.querySelectorAll('.module-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.module-panel').forEach(p => p.classList.remove('active'));
+    this.classList.add('active');
+    $('panel-' + this.dataset.panel).classList.add('active');
+  });
+});
+
+// ========== 数据模块 ==========
+let works = load('works_v2', []);
+function renderWorks() {
+  const tb = $('workTbody'); tb.innerHTML = '';
+  $('workEmptyHint').style.display = works.length ? 'none' : 'block';
+  $('countBadge').textContent = `共${works.length}条`;
+  works.forEach((w, i) => {
+    const roi = num(w.adSpend) > 0 ? (num(w.adViews)/num(w.adSpend)).toFixed(2) : '—';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input value="${esc(w.title)}" data-i="${i}" data-f="title"></td>
+      <td><select data-i="${i}" data-f="column">${COLS.map(c=>`<option${w.column===c?' selected':''}>${c}</option>`).join('')}</select></td>
+      <td><select data-i="${i}" data-f="platform">${PLATS.map(p=>`<option${w.platform===p?' selected':''}>${p}</option>`).join('')}</select></td>
+      <td><input value="${esc(w.views)}" data-i="${i}" data-f="views"></td>
+      <td><input value="${esc(w.completion)}" data-i="${i}" data-f="completion"></td>
+      <td><input value="${esc(w.engagement)}" data-i="${i}" data-f="engagement"></td>
+      <td><input value="${esc(w.adSpend)}" data-i="${i}" data-f="adSpend"></td>
+      <td><input value="${esc(w.adViews)}" data-i="${i}" data-f="adViews"></td>
+      <td class="${roi!=='—'&&+roi>=5?'best':''}">${roi}</td>
+      <td><span class="del" data-i="${i}">✕</span></td>
+    `;
+    tb.appendChild(tr);
+  });
+  tb.querySelectorAll('input,select').forEach(inp => {
+    inp.addEventListener('input', () => {
+      works[+inp.dataset.i][inp.dataset.f] = inp.value;
+      save('works_v2', works);
+      if (['adSpend','adViews'].includes(inp.dataset.f)) renderWorks();
+    });
+  });
+  tb.querySelectorAll('.del').forEach(d => {
+    d.addEventListener('click', () => {
+      if(confirm('删除？')){works.splice(+d.dataset.i,1);save('works_v2',works);renderWorks();}
+    });
+  });
+}
+$('importBtn').addEventListener('click', () => {
+  const text = $('pasteArea').value.trim();
+  if(!text)return alert('请先粘贴数据');
+  const lines = text.split(/\r?\n/).filter(l=>l.trim());
+  const parsed = [];
+  for(const l of lines){
+    const c = l.includes('\t') ? l.split('\t') : l.split(/\s{2,}/);
+    if(c.length<4)continue;
+    parsed.push({title:c[0].trim(),column:c[1]?.trim()||'其他',platform:c[2]?.trim()||'小红书',views:c[3]?.trim()||'0',completion:c[4]?.trim()||'0',engagement:c[5]?.trim()||'0',adSpend:c[6]?.trim()||'0',adViews:c[7]?.trim()||'0'});
+  }
+  if(!parsed.length)return alert('未解析到有效数据');
+  if(confirm(`导入${parsed.length}条？`)){works=works.concat(parsed);save('works_v2',works);renderWorks();$('pasteArea').value='';$('parseHint').textContent=`✅ 导入${parsed.length}条`;}
+});
+$('addSingleBtn').addEventListener('click', () => {
+  works.push({title:'新作品',column:'其他',platform:'小红书',views:'0',completion:'0',engagement:'0',adSpend:'0',adViews:'0'});
+  save('works_v2',works);renderWorks();
+});
+$('clearAllBtn').addEventListener('click', () => {
+  if(confirm('确定清空？不可恢复！')){works=[];save('works_v2',works);renderWorks();$('reportBox').textContent='已清空';}
+});
+$('exportBtn').addEventListener('click', () => {
+  if(!works.length)return alert('暂无数据');
+  const tsv = works.map(w=>`${w.title}\t${w.column}\t${w.platform}\t${w.views}\t${w.completion}\t${w.engagement}\t${w.adSpend}\t${w.adViews}`).join('\n');
+  const a = document.createElement('a');a.href=URL.createObjectURL(new Blob([tsv],{type:'text/tab-separated-values;charset=utf-8'}));a.download=`作品数据_${new Date().toLocaleDateString()}.tsv`;a.click();
+});
+$('genReportBtn').addEventListener('click', () => {
+  if(!works.length)return $('reportBox').textContent='暂无数据';
+  const stats = {};COLS.forEach(c=>stats[c]={count:0,views:0,spend:0,adViews:0});
+  works.forEach(w=>{const c=w.column||'其他';stats[c].count++;stats[c].views+=num(w.views);stats[c].spend+=num(w.adSpend);stats[c].adViews+=num(w.adViews);});
+  let bestCol='',bestAvg=0,bestROI=0,bestROICol='';
+  const lines=['📊 分析报告\n'+'='.repeat(35)];
+  for(const c of COLS){const s=stats[c];if(!s.count)continue;const avg=Math.round(s.views/s.count);const roi=s.spend>0?(s.adViews/s.spend).toFixed(2):'—';lines.push(`\n${c}`);lines.push(`  作品数: ${s.count} | 平均播放: ${avg.toLocaleString()}`);lines.push(`  ROI: ${roi}`);if(avg>bestAvg){bestAvg=avg;bestCol=c;}if(roi!=='—'&&+roi>bestROI){bestROI=+roi;bestROICol=c;}}
+  if(bestCol)lines.push(`\n🏆 最佳流量: ${bestCol}`);
+  if(bestROICol)lines.push(`💰 最佳投流: ${bestROICol} (ROI ${bestROI})`);
+  $('reportBox').textContent=lines.join('\n');
+});
+
+// ========== 账号日历 ==========
+const platformIds = ['xhs-fans','xhs-views','sph-fans','sph-views','dy-fans','dy-views','tt-fans','tt-views'];
+const pData = load('platform_v1', {});
+platformIds.forEach(id=>{if(pData[id])$(id).value=pData[id];});
+$('savePlatformBtn').addEventListener('click', () => {
+  const d={};platformIds.forEach(id=>d[id]=$(id).value);save('platform_v1',d);$('platformHint').textContent='✅ 已保存';
+});
+let uploads = load('uploads_v1', []);
+let curMonth = new Date();
+function renderCalendar() {
+  const y=curMonth.getFullYear(),m=curMonth.getMonth();
+  $('calendarTitle').textContent=`${y}年${m+1}月`;
+  const first=new Date(y,m,1),last=new Date(y,m+1,0);
+  let startDay=first.getDay();
+  const grid=$('calendarGrid');grid.innerHTML='';
+  ['日','一','二','三','四','五','六'].forEach(d=>{const l=document.createElement('div');l.className='day-label';l.textContent=d;grid.appendChild(l);});
+  for(let i=0;i<startDay;i++){const d=document.createElement('div');d.className='day other-month';grid.appendChild(d);}
+  const today=new Date().toISOString().slice(0,10);
+  for(let d=1;d<=last.getDate();d++){
+    const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const cell=document.createElement('div');
+    cell.className='day'+(ds===today?' today':'')+(uploads.some(u=>u.date===ds)?' has-upload':'');
+    cell.textContent=d;
+    cell.addEventListener('click',()=>$('uploadDate').value=ds);
+    grid.appendChild(cell);
+  }
+}
+$('prevMonth').addEventListener('click',()=>{curMonth.setMonth(curMonth.getMonth()-1);renderCalendar();});
+$('nextMonth').addEventListener('click',()=>{curMonth.setMonth(curMonth.getMonth()+1);renderCalendar();});
+function renderUploads(){
+  const list=$('uploadList');list.innerHTML='';
+  $('uploadEmptyHint').style.display=uploads.length?'none':'block';
+  uploads.slice().reverse().forEach((u,idx)=>{
+    const realIdx=uploads.length-1-idx;
+    const item=document.createElement('div');item.className='upload-item';
+    item.innerHTML=`<span class="date">${u.date}</span><span class="title">${esc(u.title)}</span><span class="col-tag">${esc(u.column)}</span><span class="del" data-i="${realIdx}">✕</span>`;
+    list.appendChild(item);
+  });
+  list.querySelectorAll('.del').forEach(d=>{d.addEventListener('click',()=>{uploads.splice(+d.dataset.i,1);save('uploads_v1',uploads);renderUploads();renderCalendar();});});
+}
+$('addUploadBtn').addEventListener('click',()=>{
+  const d=$('uploadDate').value,t=$('uploadTitle').value.trim(),c=$('uploadColumnSel').value;
+  if(!d||!t)return alert('请填写日期和标题');
+  uploads.push({date:d,title:t,column:c});save('uploads_v1',uploads);renderUploads();renderCalendar();$('uploadTitle').value='';
+});
+
+// ========== 灵感草稿 ==========
+let inspirations = load('insp_v3', []);
+if(!inspirations.length){
+  inspirations = [
+    {title:'印尼人打招呼常用口语',column:'① 印尼语有点东西',detail:'整理实用句子+发音标注'},
+    {title:'雅加达打车防坑指南',column:'④ 在印尼把生活过得舒服点',detail:'不同平台对比+避坑话术'},
+    {title:'印尼咖啡店文化',column:'② 跟着朋友发现印尼',detail:'本地人怎么点单/消费时段/氛围'},
+    {title:'问问印尼朋友对中国人的印象',column:'③ 问问印尼朋友',detail:'准备真实问题，不引导回答'}
+  ];
+  save('insp_v3',inspirations);
+}
+let shootPlans = load('shoot_plans_v1', []);
+function renderInspirations(){
+  const list=$('inspirationList');list.innerHTML='';
+  $('inspEmptyHint').style.display=inspirations.length?'none':'block';
+  inspirations.forEach((ins,i)=>{
+    const item=document.createElement('div');item.className='insp-item';
+    item.innerHTML=`
+      <div class="insp-head">
+        <span class="insp-title">${i+1}. ${esc(ins.title)}</span>
+        <span class="tag">${esc(ins.column)}</span>
+        <div class="insp-actions">
+          <button class="btn-link move-btn" data-i="${i}">→ 加入拍摄计划</button>
+          <span class="del" data-i="${i}">✕</span>
+        </div>
+      </div>
+      <div class="insp-detail">
+        <textarea class="text-smarea insp-detail-input" data-i="${i}" placeholder="写详细构思…">${esc(ins.detail||'')}</textarea>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+  list.querySelectorAll('.insp-detail-input').forEach(txt=>{
+    txt.addEventListener('input',()=>{inspirations[+txt.dataset.i].detail=txt.value;save('insp_v3',inspirations);});
+  });
+  list.querySelectorAll('.move-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const idx=+btn.dataset.i;
+      const insp=inspirations[idx];
+      shootPlans.unshift({title:insp.title,column:insp.column,content:`【来自灵感】\n${insp.detail||''}\n\n【脚本】\n开场：\n画面：\n台词：\n备注：`,status:'pending'});
+      save('shoot_plans_v1',shootPlans);
+      renderShootPlans();
+      // 自动切到拍摄计划
+      document.querySelectorAll('.module-tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.module-panel').forEach(p=>p.classList.remove('active'));
+      document.querySelector('[data-panel="shoot"]').classList.add('active');
+      $('panel-shoot').classList.add('active');
+    });
+  });
+  list.querySelectorAll('.del').forEach(d=>{
+    d.addEventListener('click',()=>{inspirations.splice(+d.dataset.i,1);save('insp_v3',inspirations);renderInspirations();});
+  });
+}
+$('addInspBtn').addEventListener('click',()=>{
+  const t=$('newInspTitle').value.trim(),c=$('newInspCol').value,d=$('newInspDetail').value;
+  if(!t)return alert('请输入选题');
+  inspirations.push({title:t,column:c,detail:d});save('insp_v3',inspirations);renderInspirations();
+  $('newInspTitle').value='';$('newInspDetail').value='';
+});
+
+// ========== 拍摄计划 - 完整功能 ==========
+function renderShootPlans(){
+  const list=$('shootList');list.innerHTML='';
+  $('shootEmptyHint').style.display=shootPlans.length?'none':'block';
+  $('shootCountBadge').textContent=`${shootPlans.length}个待拍`;
+  shootPlans.forEach((plan,i)=>{
+    const item=document.createElement('div');item.className='shoot-item';
+    item.innerHTML=`
+      <div class="shoot-head">
+        <span class="shoot-title">${i+1}. ${esc(plan.title)}</span>
+        <span class="tag">${esc(plan.column)}</span>
+        <label style="margin-left:auto;font-size:.75rem;">
+          <input type="checkbox" class="done-check" data-i="${i}" ${plan.done?'checked':''}> 完成
+        </label>
+        <span class="del" data-i="${i}">✕</span>
+      </div>
+      <textarea class="text-smarea shoot-content" data-i="${i}">${esc(plan.content)}</textarea>
+    `;
+    list.appendChild(item);
+  });
+  list.querySelectorAll('.shoot-content').forEach(txt=>{
+    txt.addEventListener('input',()=>{shootPlans[+txt.dataset.i].content=txt.value;save('shoot_plans_v1',shootPlans);});
+  });
+  list.querySelectorAll('.done-check').forEach(cb=>{
+    cb.addEventListener('change',()=>{shootPlans[+cb.dataset.i].done=cb.checked;save('shoot_plans_v1',shootPlans);});
+  });
+  list.querySelectorAll('.del').forEach(d=>{
+    d.addEventListener('click',()=>{if(confirm('删除此计划？')){shootPlans.splice(+d.dataset.i,1);save('shoot_plans_v1',shootPlans);renderShootPlans();}});
+  });
+}
+$('addShootBtn').addEventListener('click',()=>{
+  const t=$('newShootTitle').value.trim(),c=$('newShootCol').value,d=$('newShootContent').value;
+  if(!t)return alert('请填写标题');
+  shootPlans.unshift({title:t,column:c,content:d||'开场：\n画面：\n台词：\n备注：',done:false});
+  save('shoot_plans_v1',shootPlans);renderShootPlans();
+  $('newShootTitle').value='';$('newShootContent').value='';
+});
+
+// ========== 待办清单 ==========
+let todos = load('todo_v1', []);
+function renderTodos(){
+  const list=$('todoList');list.innerHTML='';
+  $('todoEmptyHint').style.display=todos.length?'none':'block';
+  todos.forEach((t,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<input type="checkbox" ${t.done?'checked':''} data-i="${i}"><label style="${t.done?'text-decoration:line-through;opacity:.6':''}">${esc(t.text)}</label><span class="del" data-i="${i}">✕</span>`;
+    list.appendChild(li);
+  });
+  list.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.addEventListener('change',()=>{todos[+cb.dataset.i].done=cb.checked;save('todo_v1',todos);renderTodos();});
+  });
+  list.querySelectorAll('.del').forEach(d=>{
+    d.addEventListener('click',()=>{todos.splice(+d.dataset.i,1);save('todo_v1',todos);renderTodos();});
+  });
+}
+$('addTodoBtn').addEventListener('click',()=>{
+  const t=$('newTodo').value.trim();if(!t)return alert('请输入待办');
+  todos.push({text:t,done:false});save('todo_v1',todos);renderTodos();$('newTodo').value='';
+});
+
+// ========== 全部初始化 ==========
+renderWorks();renderCalendar();renderUploads();renderInspirations();renderShootPlans();renderTodos();
+})();
+</script>
+</body>
+</html>
